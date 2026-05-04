@@ -89,6 +89,13 @@
       ✓ PDF subido correctamente
     </div>
 
+    <div *ngIf="isProcessing()" class="processing-overlay">
+      <div class="spinner"></div>
+      <p>Procesando información nutricional...</p>
+    </div>
+
+    <app-results *ngIf="result() as data" [data]="data"> </app-results>
+
     <div *ngIf="uploadError()" class="error-message">
       ✗ Error: {{ uploadError() }}
     </div>

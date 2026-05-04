@@ -3,22 +3,26 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { UploadService } from '../services/upload';
+import { NutritionData } from '../models/nutrition.model';
+import { ResultsComponent } from '../results/results.component';
 
 @Component({
   selector: 'app-pdf-upload',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ResultsComponent],
   templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.css']
+  styleUrls: ['./upload.component.css'],
 })
 export class PdfUploadComponent implements OnInit {
+  result = signal<NutritionData | null>(null);
 
-  constructor(private uploadService: UploadService) {} // ✅ AQUÍ
+  constructor(private uploadService: UploadService) {}
 
   currentStep = signal(1);
   selectedFile = signal<File | null>(null);
   isDragover = signal(false);
   isUploading = signal(false);
+  isProcessing = signal(false);
   uploadProgress = signal(0);
   uploadSuccess = signal(false);
   uploadError = signal<string | null>(null);
@@ -79,16 +83,31 @@ export class PdfUploadComponent implements OnInit {
     this.uploadError.set(null);
 
     this.uploadService.upload(file).subscribe({
-      next: (res) => {
+      next: (res: any) => {
+        // 👇 TERMINA UPLOAD
         this.isUploading.set(false);
-        this.uploadSuccess.set(true);
-        this.currentStep.set(2);
+
+        // 👇 INICIA PROCESAMIENTO
+        this.isProcessing.set(true);
+
+        this.uploadService.extractText(res.file_id).subscribe({
+          next: (result: any) => {
+            this.isProcessing.set(false);
+            this.uploadSuccess.set(true);
+            this.currentStep.set(2);
+
+            this.result.set(result.data);
+          },
+          error: (err) => {
+            this.isProcessing.set(false);
+            this.uploadError.set('Error procesando el PDF');
+          },
+        });
       },
       error: (err) => {
         this.isUploading.set(false);
         this.uploadError.set('Error al subir archivo');
-        console.error(err);
-      }
+      },
     });
   }
 

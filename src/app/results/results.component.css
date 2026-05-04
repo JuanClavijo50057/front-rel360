@@ -1,0 +1,20 @@
+.nutrition-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.nutrition-table tr:nth-child(even) {
+  background: #f5f5f5;
+}
+
+.nutrition-table td {
+  padding: 12px;
+}
+
+.nutrition-table td:first-child {
+  font-weight: 600;
+}

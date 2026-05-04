@@ -1,0 +1,70 @@
+<div *ngIf="data" class="results-container">
+  <h2>Información Nutricional</h2>
+
+  <table class="nutrition-table">
+    <tr>
+      <td>Producto</td>
+      <td>{{ data.producto }}</td>
+    </tr>
+    <tr>
+      <td>Lote</td>
+      <td>{{ data.lote }}</td>
+    </tr>
+    <tr>
+      <td>Proteína</td>
+      <td>
+        {{ data.proteina !== null ? data.proteina + " g" : "N/A" }}
+      </td>
+    </tr>
+    <tr>
+      <td>Grasa Total</td>
+      <td>
+        {{ data.grasa_total !== null ? data.grasa_total + " g" : "N/A" }}
+      </td>
+    </tr>
+    <tr>
+      <td>Grasa Saturada</td>
+      <td>
+        {{ data.grasa_saturada !== null ? data.grasa_saturada + " g" : "N/A" }}
+      </td>
+    </tr>
+    <tr>
+      <td>Carbohidratos</td>
+      <td>
+        {{
+          data.carbohidratos_totales !== null
+            ? data.carbohidratos_totales + " g"
+            : "N/A"
+        }}
+      </td>
+    </tr>
+    <tr>
+      <td>Azúcares</td>
+      <td>
+        {{
+          data.azucares_totales !== null ? data.azucares_totales + " g" : "N/A"
+        }}
+      </td>
+    </tr>
+    <tr>
+      <td>Sodio</td>
+      <td>
+        {{ data.sodio_mg_100g !== null ? data.sodio_mg_100g + " mg" : "N/A" }}
+      </td>
+    </tr>
+    <tr>
+      <td>Calcio</td>
+      <td>
+        {{ data.calcio_mg_100g !== null ? data.calcio_mg_100g + " mg" : "N/A" }}
+      </td>
+    </tr>
+    <tr>
+      <td>Potasio</td>
+      <td>
+        {{
+          data.potasio_mg_100g !== null ? data.potasio_mg_100g + " mg" : "N/A"
+        }}
+      </td>
+    </tr>
+  </table>
+</div>

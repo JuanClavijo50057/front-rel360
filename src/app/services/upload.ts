@@ -3,10 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UploadService {
-
   private API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
@@ -16,5 +15,11 @@ export class UploadService {
     formData.append('file', file);
 
     return this.http.post(`${this.API_URL}/upload`, formData);
+  }
+
+  extractText(fileId: string) {
+    return this.http.post(`${environment.apiUrl}/extract-text`, {
+      file_id: fileId,
+    });
   }
 }
