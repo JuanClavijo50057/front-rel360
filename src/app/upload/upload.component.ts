@@ -5,11 +5,17 @@ import { FormsModule } from '@angular/forms';
 import { UploadService } from '../services/upload';
 import { NutritionData } from '../models/nutrition.model';
 import { ResultsComponent } from '../results/results.component';
+import { NutritionLabelComponent } from '../components/nutrition-label/nutrition-label.component';
 
 @Component({
   selector: 'app-pdf-upload',
   standalone: true,
-  imports: [CommonModule, FormsModule, ResultsComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ResultsComponent,
+    NutritionLabelComponent,
+  ],
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.css'],
 })
@@ -84,11 +90,10 @@ export class PdfUploadComponent implements OnInit {
 
     this.uploadService.upload(file).subscribe({
       next: (res: any) => {
-        // 👇 TERMINA UPLOAD
         this.isUploading.set(false);
 
-        // 👇 INICIA PROCESAMIENTO
         this.isProcessing.set(true);
+        this.currentStep.set(2);
 
         this.uploadService.extractText(res.file_id).subscribe({
           next: (result: any) => {
@@ -97,6 +102,7 @@ export class PdfUploadComponent implements OnInit {
             this.currentStep.set(2);
 
             this.result.set(result.data);
+            this.currentStep.set(3);
           },
           error: (err) => {
             this.isProcessing.set(false);

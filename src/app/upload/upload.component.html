@@ -12,7 +12,7 @@
   <div class="mode-section">
     <div class="mode-card">
       <div class="mode-icon">📄</div>
-      <h2>Modo 1: Análisis de Laboratorio</h2>
+      <h2>Análisis de Laboratorio</h2>
       <p>Sube un PDF con resultados de laboratorio</p>
     </div>
   </div>
@@ -35,7 +35,7 @@
     </div>
     <div class="step" [class.active]="currentStep() === 4">
       <div class="step-number">4</div>
-      <div class="step-label">Imprimir</div>
+      <div class="step-label">Descargar</div>
     </div>
   </div>
 
@@ -94,7 +94,9 @@
       <p>Procesando información nutricional...</p>
     </div>
 
-    <app-results *ngIf="result() as data" [data]="data"> </app-results>
+    <div class="label-preview" *ngIf="result()">
+      <app-nutrition-label [data]="result()!"></app-nutrition-label>
+    </div>
 
     <div *ngIf="uploadError()" class="error-message">
       ✗ Error: {{ uploadError() }}

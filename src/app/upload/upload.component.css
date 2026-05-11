@@ -12,6 +12,12 @@
       border-bottom: 2px solid rgba(34, 139, 34, 0.2);
     }
 
+    .label-preview {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
     .logo-section {
       display: flex;
       align-items: center;
