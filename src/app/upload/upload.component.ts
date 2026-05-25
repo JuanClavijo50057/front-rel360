@@ -3,24 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { UploadService } from '../services/upload';
-import { NutritionData } from '../models/nutrition.model';
-import { ResultsComponent } from '../results/results.component';
 import { NutritionLabelComponent } from '../components/nutrition-label/nutrition-label.component';
+import { NutritionTable } from '../models/nutririon-table.model';
 
 @Component({
   selector: 'app-pdf-upload',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ResultsComponent,
-    NutritionLabelComponent,
-  ],
+  imports: [CommonModule, FormsModule, NutritionLabelComponent],
   templateUrl: './upload.component.html',
   styleUrls: ['./upload.component.css'],
 })
 export class PdfUploadComponent implements OnInit {
-  result = signal<NutritionData | null>(null);
+  result = signal<NutritionTable | null>(null);
 
   constructor(private uploadService: UploadService) {}
 
@@ -32,6 +26,8 @@ export class PdfUploadComponent implements OnInit {
   uploadProgress = signal(0);
   uploadSuccess = signal(false);
   uploadError = signal<string | null>(null);
+  tipoAlimento = 'solido';
+  contieneEdulcorantes = false;
 
   ngOnInit() {
     this.currentStep.set(1);
@@ -95,22 +91,44 @@ export class PdfUploadComponent implements OnInit {
         this.isProcessing.set(true);
         this.currentStep.set(2);
 
+        // 1. Extraer texto
         this.uploadService.extractText(res.file_id).subscribe({
-          next: (result: any) => {
-            this.isProcessing.set(false);
-            this.uploadSuccess.set(true);
-            this.currentStep.set(2);
+          next: () => {
+            // 2. Generar tabla nutricional
+            this.uploadService
+              .generateNutritionTable(
+                res.file_id,
+                this.tipoAlimento,
+                this.contieneEdulcorantes,
+              )
+              .subscribe({
+                next: (tableResult: any) => {
+                  this.isProcessing.set(false);
+                  this.uploadSuccess.set(true);
 
-            this.result.set(result.data);
-            this.currentStep.set(3);
+                  console.log(tableResult);
+                  console.log('Tabla nutricional generada:', tableResult.data);
+
+                  this.result.set(tableResult.data);
+
+                  this.currentStep.set(3);
+                },
+
+                error: () => {
+                  this.isProcessing.set(false);
+                  this.uploadError.set('Error generando tabla nutricional');
+                },
+              });
           },
-          error: (err) => {
+
+          error: () => {
             this.isProcessing.set(false);
-            this.uploadError.set('Error procesando el PDF');
+            this.uploadError.set('Error extrayendo texto del PDF');
           },
         });
       },
-      error: (err) => {
+
+      error: () => {
         this.isUploading.set(false);
         this.uploadError.set('Error al subir archivo');
       },

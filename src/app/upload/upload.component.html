@@ -1,115 +1,143 @@
-<div class="pdf-upload-container">
-  <div class="header">
-    <div class="logo-section">
-      <div class="logo">NL</div>
-      <div class="logo-text">
-        <h1>NutriLabel</h1>
-        <p>Generador de Etiquetas Nutricionales</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="mode-section">
-    <div class="mode-card">
-      <div class="mode-icon">📄</div>
-      <h2>Análisis de Laboratorio</h2>
-      <p>Sube un PDF con resultados de laboratorio</p>
-    </div>
-  </div>
-
-  <div class="steps-container">
-    <div class="step" [class.active]="currentStep() === 1">
-      <div class="step-number">1</div>
-      <div class="step-label">Subir PDF</div>
-      <span class="arrow">→</span>
-    </div>
-    <div class="step" [class.active]="currentStep() === 2">
-      <div class="step-number">2</div>
-      <div class="step-label">Interpretar</div>
-      <span class="arrow">→</span>
-    </div>
-    <div class="step" [class.active]="currentStep() === 3">
-      <div class="step-number">3</div>
-      <div class="step-label">Generar Tabla</div>
-      <span class="arrow">→</span>
-    </div>
-    <div class="step" [class.active]="currentStep() === 4">
-      <div class="step-number">4</div>
-      <div class="step-label">Descargar</div>
-    </div>
-  </div>
-
-  <div class="upload-section">
-    <div
-      class="upload-area"
-      [class.dragover]="isDragover()"
-      (dragover)="onDragOver($event)"
-      (dragleave)="onDragLeave($event)"
-      (drop)="onDrop($event)"
-    >
-      <div class="upload-icon">⬆</div>
-      <h3>Arrastra tu PDF aquí</h3>
-      <p>o haz clic para seleccionar</p>
-      <button class="select-button" (click)="fileInput.click()">
-        Seleccionar archivo
-      </button>
-      <input
-        #fileInput
-        type="file"
-        accept=".pdf"
-        (change)="onFileSelected($event)"
-        hidden
-      />
-    </div>
-
-    <div *ngIf="selectedFile()" class="file-preview">
-      <div class="file-info">
-        <div class="file-icon">📋</div>
-        <div class="file-details">
-          <p class="file-name">{{ selectedFile()?.name }}</p>
-          <p class="file-size">
-            {{ formatFileSize(selectedFile()?.size || 0) }}
-          </p>
+<div class="main-container">
+  <div class="pdf-upload-container">
+    <div class="header">
+      <div class="logo-section">
+        <div class="logo">NL</div>
+        <div class="logo-text">
+          <h1>NutriLabel</h1>
+          <p>Generador de Etiquetas Nutricionales</p>
         </div>
       </div>
-      <button class="upload-button" (click)="uploadFile()">
-        {{ isUploading() ? "Subiendo..." : "Subir PDF" }}
-      </button>
     </div>
 
-    <div
-      *ngIf="uploadProgress() > 0 && uploadProgress() < 100"
-      class="progress-bar"
-    >
-      <div class="progress" [style.width.%]="uploadProgress()"></div>
-      <span class="progress-text">{{ uploadProgress() }}%</span>
+    <div class="mode-section">
+      <div class="mode-card">
+        <div class="mode-icon">📄</div>
+        <h2>Análisis de Laboratorio</h2>
+        <p>Sube un PDF con resultados de laboratorio</p>
+      </div>
     </div>
 
-    <div *ngIf="uploadSuccess()" class="success-message">
-      ✓ PDF subido correctamente
+    <div class="steps-container">
+      <div class="step" [class.active]="currentStep() === 1">
+        <div class="step-number">1</div>
+        <div class="step-label">Subir PDF</div>
+        <span class="arrow">→</span>
+      </div>
+      <div class="step" [class.active]="currentStep() === 2">
+        <div class="step-number">2</div>
+        <div class="step-label">Interpretar</div>
+        <span class="arrow">→</span>
+      </div>
+      <div class="step" [class.active]="currentStep() === 3">
+        <div class="step-number">3</div>
+        <div class="step-label">Generar Tabla</div>
+        <span class="arrow">→</span>
+      </div>
+      <div class="step" [class.active]="currentStep() === 4">
+        <div class="step-number">4</div>
+        <div class="step-label">Descargar</div>
+      </div>
     </div>
 
-    <div *ngIf="isProcessing()" class="processing-overlay">
-      <div class="spinner"></div>
-      <p>Procesando información nutricional...</p>
+    <div class="upload-section">
+      <div
+        class="upload-area"
+        [class.dragover]="isDragover()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+      >
+        <div class="upload-icon">⬆</div>
+        <h3>Arrastra tu PDF aquí</h3>
+        <p>o haz clic para seleccionar</p>
+        <button class="select-button" (click)="fileInput.click()">
+          Seleccionar archivo
+        </button>
+        <input
+          #fileInput
+          type="file"
+          accept=".pdf"
+          (change)="onFileSelected($event)"
+          hidden
+        />
+      </div>
+
+      <div *ngIf="selectedFile()" class="file-preview">
+        <div class="file-info">
+          <div class="file-icon">📄</div>
+
+          <div class="file-details">
+            <p class="file-name">
+              {{ selectedFile()?.name }}
+            </p>
+
+            <p class="file-size">
+              {{ formatFileSize(selectedFile()?.size || 0) }}
+            </p>
+          </div>
+        </div>
+
+        <div class="form-options">
+          <div class="field-group">
+            <label>Tipo de alimento</label>
+
+            <select [(ngModel)]="tipoAlimento">
+              <option value="solido">Sólido</option>
+              <option value="liquido">Líquido</option>
+            </select>
+          </div>
+
+          <label class="checkbox-card">
+            <input type="checkbox" [(ngModel)]="contieneEdulcorantes" />
+
+            <span>Contiene edulcorantes</span>
+          </label>
+
+          <button
+            class="upload-button"
+            (click)="uploadFile()"
+            [disabled]="isUploading() || isProcessing()"
+          >
+            {{ isProcessing() ? "Procesando..." : "Subir PDF" }}
+          </button>
+        </div>
+      </div>
+
+      <div
+        *ngIf="uploadProgress() > 0 && uploadProgress() < 100"
+        class="progress-bar"
+      >
+        <div class="progress" [style.width.%]="uploadProgress()"></div>
+        <span class="progress-text">{{ uploadProgress() }}%</span>
+      </div>
+
+      <div *ngIf="uploadSuccess()" class="success-message">
+        ✓ PDF subido correctamente
+      </div>
+
+      <div *ngIf="isProcessing()" class="processing-overlay">
+        <div class="spinner"></div>
+        <p>Procesando información nutricional...</p>
+      </div>
+
+      <div class="label-preview" *ngIf="result()">
+        <app-nutrition-label [data]="result()!"></app-nutrition-label>
+      </div>
+
+      <div *ngIf="uploadError()" class="error-message">
+        ✗ Error: {{ uploadError() }}
+      </div>
     </div>
 
-    <div class="label-preview" *ngIf="result()">
-      <app-nutrition-label [data]="result()!"></app-nutrition-label>
+    <div class="info-section">
+      <h3>¿Cómo funciona?</h3>
+      <ol>
+        <li>Sube el PDF con los resultados del laboratorio</li>
+        <li>Nuestro sistema interpreta automáticamente los valores</li>
+        <li>Se genera la tabla de información nutricional</li>
+        <li>Descarga o imprime tu etiqueta lista</li>
+      </ol>
     </div>
-
-    <div *ngIf="uploadError()" class="error-message">
-      ✗ Error: {{ uploadError() }}
-    </div>
-  </div>
-
-  <div class="info-section">
-    <h3>¿Cómo funciona?</h3>
-    <ol>
-      <li>Sube el PDF con los resultados del laboratorio</li>
-      <li>Nuestro sistema interpreta automáticamente los valores</li>
-      <li>Se genera la tabla de información nutricional</li>
-      <li>Descarga o imprime tu etiqueta lista</li>
-    </ol>
   </div>
 </div>

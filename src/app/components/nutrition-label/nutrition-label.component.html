@@ -1,74 +1,109 @@
-<div class="nutrition-facts" id="nutrition-label">
+<div class="label-wrapper">
+  <div id="nutrition-label-content" class="label-content">
+    <div
+      class="warning-labels"
+      *ngIf="data.advertencias && data.advertencias.length > 0"
+    >
+      <div class="warning-octagon" *ngFor="let advertencia of data.advertencias">
+        <svg viewBox="0 0 100 100" class="warning-svg" aria-hidden="true">
+          <polygon
+            points="30,0 70,0 100,30 100,70 70,100 30,100 0,70 0,30"
+            fill="black"
+            stroke="white"
+            stroke-width="6"
+          ></polygon>
+          <text x="50" y="28" text-anchor="middle" class="warning-line">
+            EXCESO
+          </text>
+          <text x="50" y="48" text-anchor="middle" class="warning-line">
+            EN
+          </text>
+          <text x="50" y="68" text-anchor="middle" class="warning-line">
+            AZÚCARES
+          </text>
+          <text x="50" y="86" text-anchor="middle" class="warning-brand">
+            MINSALUD
+          </text>
+        </svg>
+      </div>
+    </div>
 
-  <div class="title">
-    Información Nutricional
+    <div class="nutrition-facts">
+      <div class="title">Información Nutricional</div>
+
+      <div class="serving">
+        Tamaño por porción {{ data.porcion.descripcion || '100 g' }}
+      </div>
+
+      <div class="serving">
+        Porciones por envase {{ data.porcion.porciones_por_envase || 1 }}
+      </div>
+
+      <div class="divider thick"></div>
+
+      <div class="amount">Cantidad por porción</div>
+
+      <div class="calories-row">
+        <span>Calorías</span>
+        <span>{{ calories }}</span>
+      </div>
+
+      <div class="divider thick"></div>
+
+      <div class="daily-value">% Valor Diario*</div>
+
+      <div class="row">
+        <span>
+          <b>Grasa Total</b>
+          {{ data.por_porcion.grasa_total_g || 0 }} g
+        </span>
+      </div>
+
+      <div class="sub-row">
+        <span>
+          Grasa Saturada
+          {{ data.por_porcion.grasa_saturada_g || 0 }} g
+        </span>
+      </div>
+
+      <div class="row">
+        <span>
+          <b>Carbohidratos</b>
+          {{ data.por_porcion.carbohidratos_totales_g || 0 }} g
+        </span>
+      </div>
+
+      <div class="sub-row">
+        <span>
+          Azúcares
+          {{ data.por_porcion.azucares_totales_g || 0 }} g
+        </span>
+      </div>
+
+      <div class="row">
+        <span>
+          <b>Proteína</b>
+          {{ data.por_porcion.proteina_g || 0 }} g
+        </span>
+      </div>
+
+      <div class="row">
+        <span>
+          <b>Sodio</b>
+          {{ data.por_porcion.sodio_mg || 0 }} mg
+        </span>
+      </div>
+
+      <div class="divider thick"></div>
+
+      <div class="micros">Calcio {{ data.por_porcion.calcio_mg || 0 }} mg</div>
+
+      <div class="footer">
+        * Los porcentajes de valores diarios están basados en una dieta de 2000
+        calorías.
+      </div>
+    </div>
   </div>
 
-  <div class="serving">
-    Tamaño por porción 100 g
-  </div>
-
-  <div class="divider thick"></div>
-
-  <div class="row bold">
-    <span>Cantidad por porción</span>
-  </div>
-
-  <div class="row calories">
-    <span>Calorías</span>
-    <span>260</span>
-  </div>
-
-  <div class="divider thick"></div>
-
-  <div class="row small bold">
-    <span></span>
-    <span>% Valor Diario*</span>
-  </div>
-
-  <div class="row">
-    <span><b>Grasa Total</b> {{ data.grasa_total ?? 0 }} g</span>
-    <span>20%</span>
-  </div>
-
-  <div class="row indent">
-    <span>Grasa Saturada {{ data.grasa_saturada ?? 0 }} g</span>
-    <span>10%</span>
-  </div>
-
-  <div class="row">
-    <span><b>Carbohidratos</b> {{ data.carbohidratos_totales ?? 0 }} g</span>
-    <span>15%</span>
-  </div>
-
-  <div class="row indent">
-    <span>Azúcares {{ data.azucares_totales ?? 0 }} g</span>
-    <span></span>
-  </div>
-
-  <div class="row">
-    <span><b>Proteína</b> {{ data.proteina ?? 0 }} g</span>
-    <span></span>
-  </div>
-
-  <div class="row">
-    <span><b>Sodio</b> {{ data.sodio_mg_100g ?? 0 }} mg</span>
-    <span>8%</span>
-  </div>
-
-  <div class="divider thick"></div>
-
-  <div class="vitamins">
-    Calcio {{ data.calcio_mg_100g ?? 0 }} mg
-  </div>
-
-  <div class="footer">
-    * Los porcentajes de valores diarios están basados
-    en una dieta de 2000 calorías.
-  </div>
-
+  <button class="pdf-button" (click)="downloadPDF()">Descargar PDF</button>
 </div>
-
-<button class="pdf-button" (click)="downloadPDF()">
-  Descargar PDF
-</button>

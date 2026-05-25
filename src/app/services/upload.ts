@@ -18,8 +18,20 @@ export class UploadService {
   }
 
   extractText(fileId: string) {
-    return this.http.post(`${environment.apiUrl}/extract-text`, {
+    return this.http.post(`${this.API_URL}/extract-text`, {
       file_id: fileId,
+    });
+  }
+
+  generateNutritionTable(
+    fileId: string,
+    tipoAlimento: string,
+    contieneEdulcorantes: boolean
+  ) {
+    return this.http.post(`${this.API_URL}/nutrition-table`, {
+      file_id: fileId,
+      tipo_alimento: 'solido',
+      contiene_edulcorantes: contieneEdulcorantes,
     });
   }
 }
