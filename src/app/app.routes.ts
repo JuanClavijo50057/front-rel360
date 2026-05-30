@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { PdfUploadComponent } from './upload/upload.component';
+import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './auth/login/login.component';
 import { authGuard } from './auth/auth.guard';
 
@@ -10,7 +10,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    component: PdfUploadComponent,
+    component: HomeComponent,         // ← antes era PdfUploadComponent
     canActivate: [authGuard],
   },
   {

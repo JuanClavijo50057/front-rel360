@@ -1,0 +1,77 @@
+<div class="manual-wrapper">
+
+  <div class="form-header">
+    <h2>Ingreso manual de datos</h2>
+    <p>Completa los valores del análisis de laboratorio directamente</p>
+  </div>
+
+  <!-- Errores de validación -->
+  <div class="error-list" *ngIf="errors().length > 0">
+    <p *ngFor="let e of errors()">✗ {{ e }}</p>
+  </div>
+
+  <div class="form-body" *ngIf="!result()">
+
+    <!-- Info del producto -->
+    <div class="form-section">
+      <h3 class="section-title">Información del producto</h3>
+      <div class="fields-grid">
+        <div class="field">
+          <label>Nombre del producto *</label>
+          <input type="text" [(ngModel)]="producto" placeholder="Ej: Avena en hojuelas" />
+        </div>
+        <div class="field">
+          <label>Porción (gramos) *</label>
+          <input type="number" [(ngModel)]="porcionValue" min="0" step="0.1" placeholder="Ej: 45" />
+        </div>
+        <div class="field">
+          <label>Tipo de alimento</label>
+          <select [(ngModel)]="tipoAlimento">
+            <option value="solido">Sólido</option>
+            <option value="liquido">Líquido</option>
+          </select>
+        </div>
+        <div class="field field-check">
+          <label class="checkbox-row">
+            <input type="checkbox" [(ngModel)]="contieneEdulcorantes" />
+            <span>Contiene edulcorantes</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Valores nutricionales -->
+    <div class="form-section">
+      <h3 class="section-title">Valores nutricionales por porción</h3>
+      <div class="fields-grid">
+        <div class="field" *ngFor="let f of nutrientFields">
+          <label>{{ f.label }} ({{ f.unit }}) {{ f.required ? '*' : '' }}</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="values[f.key]"
+            [placeholder]="'0 ' + f.unit"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-primary" (click)="submit()">Generar tabla nutricional</button>
+    </div>
+
+  </div>
+
+  <!-- Resultado -->
+  <div class="result-section" *ngIf="result()">
+    <div class="result-header">
+      <div class="success-badge">✓ Tabla generada</div>
+      <button class="btn-ghost" (click)="reset()">Ingresar nuevos datos</button>
+    </div>
+    
+    <!-- Componente de etiqueta nutricional -->
+    <app-nutrition-label [data]="result()!"></app-nutrition-label>
+  </div>
+
+</div>

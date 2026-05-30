@@ -1,0 +1,51 @@
+<div class="history-wrapper">
+
+  <div class="history-header">
+    <h2>Documentos procesados</h2>
+    <span class="count-badge">{{ historyService.documents().length }}</span>
+  </div>
+
+  <!-- Lista vacía -->
+  <div class="empty-state" *ngIf="historyService.documents().length === 0">
+    <div class="empty-icon">🗂️</div>
+    <h3>Sin documentos aún</h3>
+    <p>Los PDFs que proceses aparecerán aquí</p>
+  </div>
+
+  <!-- Lista de documentos -->
+  <div class="doc-list" *ngIf="historyService.documents().length > 0">
+    <div
+      class="doc-card"
+      *ngFor="let doc of historyService.documents()"
+      (click)="select(doc)"
+    >
+      <div class="doc-icon">📄</div>
+
+      <div class="doc-info">
+        <p class="doc-name">{{ doc.fileName }}</p>
+        <p class="doc-meta">
+          {{ doc.producto || 'Sin nombre' }} ·
+          {{ formatDate(doc.uploadedAt) }}
+        </p>
+        <div class="doc-tags">
+          <span class="tag">{{ doc.tipoAlimento }}</span>
+          <span class="tag" *ngIf="doc.contieneEdulcorantes">Edulcorantes</span>
+          <span class="tag status" [class.completed]="doc.status === 'completed'">
+            {{ getStatusLabel(doc.status) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="doc-actions">
+        <button class="btn-view">Ver tabla →</button>
+        <button class="btn-delete" (click)="remove($event, doc.id)" title="Eliminar">🗑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nota futura -->
+  <p class="future-note">
+    Próximamente: búsqueda, filtros y exportación masiva
+  </p>
+
+</div>
