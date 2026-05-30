@@ -1,0 +1,77 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="brand">
+      <div class="logo">NL</div>
+      <div class="brand-text">
+        <h1>NutriLabel</h1>
+        <p>Generador de Etiquetas Nutricionales</p>
+      </div>
+    </div>
+
+    <h2 class="form-title">
+      {{ mode() === 'login' ? 'Iniciar sesión' : 'Crear cuenta' }}
+    </h2>
+
+    <div class="form">
+
+      <div class="field" *ngIf="mode() === 'register'">
+        <label for="fullName">Nombre completo</label>
+        <input
+          id="fullName"
+          type="text"
+          [(ngModel)]="fullName"
+          placeholder="Tu nombre"
+          autocomplete="name"
+        />
+      </div>
+
+      <div class="field">
+        <label for="email">Correo electrónico</label>
+        <input
+          id="email"
+          type="email"
+          [(ngModel)]="email"
+          placeholder="correo@ejemplo.com"
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <input
+          id="password"
+          type="password"
+          [(ngModel)]="password"
+          placeholder="Mínimo 8 caracteres"
+          autocomplete="current-password"
+          (keyup.enter)="submit()"
+        />
+      </div>
+
+      <div class="error-msg" *ngIf="errorMsg()">
+        ✗ {{ errorMsg() }}
+      </div>
+
+      <button
+        class="submit-btn"
+        (click)="submit()"
+        [disabled]="isLoading() || !email || !password"
+      >
+        <span *ngIf="!isLoading()">
+          {{ mode() === 'login' ? 'Entrar' : 'Registrarse' }}
+        </span>
+        <span *ngIf="isLoading()" class="spinner-inline"></span>
+      </button>
+
+    </div>
+
+    <p class="toggle-mode">
+      {{ mode() === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?' }}
+      <button class="link-btn" (click)="toggleMode()">
+        {{ mode() === 'login' ? 'Regístrate' : 'Inicia sesión' }}
+      </button>
+    </p>
+
+  </div>
+</div>

@@ -1,14 +1,18 @@
 <div class="main-container">
   <div class="pdf-upload-container">
     <div class="header">
-      <div class="logo-section">
-        <div class="logo">NL</div>
-        <div class="logo-text">
-          <h1>NutriLabel</h1>
-          <p>Generador de Etiquetas Nutricionales</p>
-        </div>
-      </div>
+  <div class="logo-section">
+    <div class="logo">NL</div>
+    <div class="logo-text">
+      <h1>NutriLabel</h1>
+      <p>Generador de Etiquetas Nutricionales</p>
     </div>
+  </div>
+  <div class="user-section">
+    <span class="user-email">{{ auth.currentUser()?.email }}</span>
+    <button class="logout-btn" (click)="logout()">Salir</button>
+  </div>
+</div>
 
     <div class="mode-section">
       <div class="mode-card">

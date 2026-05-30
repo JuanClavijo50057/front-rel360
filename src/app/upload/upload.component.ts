@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { UploadService } from '../services/upload';
 import { NutritionLabelComponent } from '../components/nutrition-label/nutrition-label.component';
 import { NutritionTable } from '../models/nutririon-table.model';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-pdf-upload',
@@ -16,7 +17,11 @@ import { NutritionTable } from '../models/nutririon-table.model';
 export class PdfUploadComponent implements OnInit {
   result = signal<NutritionTable | null>(null);
 
-  constructor(private uploadService: UploadService) {}
+ constructor(private uploadService: UploadService, public auth: AuthService) {}
+
+  logout(): void {
+  this.auth.logout();
+}
 
   currentStep = signal(1);
   selectedFile = signal<File | null>(null);
