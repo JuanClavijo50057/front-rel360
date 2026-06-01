@@ -1,3 +1,4 @@
+<!-- src/app/home/home.component.html (ACTUALIZADO) -->
 <div class="home-shell">
 
   <!-- Header -->
@@ -29,6 +30,10 @@
       <span class="tab-icon"></span>
       <span class="tab-label">Ingreso Manual</span>
     </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'packaging'" (click)="setTab('packaging')">
+      <span class="tab-icon"></span>
+      <span class="tab-label">Empaques</span>
+    </button>
   </nav>
 
   <!-- Contenido -->
@@ -56,6 +61,10 @@
 
     <div *ngIf="activeTab() === 'manual'">
       <app-manual-entry (documentProcessed)="onDocumentProcessed($event)"></app-manual-entry>
+    </div>
+
+    <div *ngIf="activeTab() === 'packaging'">
+      <app-packaging></app-packaging>
     </div>
 
   </main>

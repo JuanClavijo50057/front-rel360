@@ -1,13 +1,15 @@
+// src/app/home/home.component.ts (ACTUALIZADO)
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 import { UploadComponent } from '../upload/upload.component';
 import { HistoryComponent } from '../features/history/history.component';
 import { ManualEntryComponent } from '../features/manual-entry/manual-entry.component';
+import { PackagingComponent } from '../features/packaging/packaging.component';
 import { NutritionLabelComponent } from '../components/nutrition-label/nutrition-label.component';
 import { ProcessedDocument } from '../shared/models/document.model';
 
-type Tab = 'upload' | 'history' | 'manual';
+type Tab = 'upload' | 'history' | 'manual' | 'packaging';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +19,7 @@ type Tab = 'upload' | 'history' | 'manual';
     UploadComponent,
     HistoryComponent,
     ManualEntryComponent,
+    PackagingComponent,
     NutritionLabelComponent,
   ],
   templateUrl: './home.component.html',

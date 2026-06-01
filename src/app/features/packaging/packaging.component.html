@@ -1,0 +1,250 @@
+<!-- src/app/features/packaging/packaging.component.html -->
+<div class="packaging-wizard">
+
+  <!-- Encabezado -->
+  <header class="wizard-header">
+    <h1>Generación de Empaques</h1>
+    <p>Crea empaques profesionales a partir de tus análisis</p>
+  </header>
+
+  <!-- Indicador de Pasos -->
+  <div class="steps-indicator">
+    <div
+      *ngFor="let step of steps"
+      class="step"
+      [class.active]="state().currentStep === step"
+      [class.completed]="steps.indexOf(step) < steps.indexOf(state().currentStep)"
+    >
+      <div class="step-number">{{ steps.indexOf(step) + 1 }}</div>
+      <div class="step-label">{{ getStepLabel(step) }}</div>
+    </div>
+  </div>
+
+  <!-- Contenido -->
+  <main class="wizard-content">
+
+    <!-- PASO 1: Seleccionar Análisis -->
+    <section *ngIf="state().currentStep === 'select'" class="step-content">
+      <h2>Paso 1: Selecciona un análisis del historial</h2>
+      <p class="step-description">
+        Elige un análisis previamente procesado para extraer sus datos nutricionales y sellos regulatorios.
+      </p>
+
+      <div *ngIf="historyService.documents().length === 0" class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>Sin análisis disponibles</h3>
+        <p>Primero debes procesar un documento en la sección de "Subir PDF"</p>
+      </div>
+
+      <div *ngIf="historyService.documents().length > 0" class="doc-selector">
+        <div
+          *ngFor="let doc of historyService.documents()"
+          class="doc-card"
+          (click)="selectDocument(doc)"
+        >
+          <div class="doc-header">
+            <h3>{{ doc.producto || doc.fileName }}</h3>
+            <span class="doc-status" [class.completed]="doc.status === 'completed'">
+              {{ doc.status }}
+            </span>
+          </div>
+          <div class="doc-meta">
+            <p><strong>Archivo:</strong> {{ doc.fileName }}</p>
+            <p><strong>Tipo:</strong> {{ doc.tipoAlimento }}</p>
+            <p><strong>Fecha:</strong> {{ doc.uploadedAt | date:'short' }}</p>
+          </div>
+          <div class="doc-footer">
+            <span *ngIf="doc.contieneEdulcorantes" class="badge">Contiene Edulcorantes</span>
+            <span *ngIf="doc.nutritionData?.advertencias?.length" class="badge warning">
+              {{ doc.nutritionData.advertencias.length }} advertencias
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PASO 2: Cargar Imágenes -->
+    <section *ngIf="state().currentStep === 'upload'" class="step-content">
+      <h2>Paso 2: Carga las imágenes del empaque</h2>
+      <p class="step-description">
+        Sube la imagen frontal (frente del empaque) y la trasera (parte posterior).
+      </p>
+
+      <div class="image-upload-grid">
+        <!-- Upload Frontal -->
+        <div class="upload-box">
+          <label class="upload-label">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-title">Imagen Frontal</div>
+            <div class="upload-hint">Frente del empaque</div>
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onFrontalImageSelected($event)"
+              hidden
+            />
+          </label>
+          <div *ngIf="state().frontalImage" class="preview-thumbnail">
+            <img [src]="state().frontalImage!.src" alt="Frontal" />
+            <span class="preview-label">Cargada ✓</span>
+          </div>
+        </div>
+
+        <!-- Upload Trasera -->
+        <div class="upload-box">
+          <label class="upload-label">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-title">Imagen Trasera</div>
+            <div class="upload-hint">Parte posterior del empaque</div>
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onTraseraImageSelected($event)"
+              hidden
+            />
+          </label>
+          <div *ngIf="state().traseraImage" class="preview-thumbnail">
+            <img [src]="state().traseraImage!.src" alt="Trasera" />
+            <span class="preview-label">Cargada ✓</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="selected-doc-info">
+        <h4>Análisis seleccionado:</h4>
+        <p class="doc-name">{{ state().selectedDocument?.producto || state().selectedDocument?.fileName }}</p>
+        <div *ngIf="state().selectedDocument?.nutritionData?.advertencias?.length" class="seals-preview">
+          <strong>Sellos a incluir ({{ state().selectedDocument?.nutritionData?.advertencias?.length }}):</strong>
+          <div class="seals-list">
+            <span *ngFor="let seal of state().selectedDocument?.nutritionData?.advertencias" class="seal-tag">
+              {{ seal.etiqueta }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn btn-secondary" (click)="goBack()">Atrás</button>
+        <button
+          class="btn btn-primary"
+          (click)="proceedToCompose()"
+          [disabled]="!state().frontalImage || !state().traseraImage || state().isProcessing"
+        >
+          {{ state().isProcessing ? 'Procesando...' : 'Componer Empaque' }}
+        </button>
+      </div>
+    </section>
+
+    <!-- PASO 3: Composición (Procesando) -->
+    <section *ngIf="state().currentStep === 'compose'" class="step-content">
+      <h2>Paso 3: Composición automática</h2>
+      <p class="step-description">
+        Estamos posicionando automáticamente los sellos y la tabla nutricional...
+      </p>
+
+      <div class="processing-container">
+        <div class="spinner"></div>
+        <p class="processing-text">Componiendo imágenes...</p>
+        <div class="processing-steps">
+          <div class="processing-step">
+            <span class="check">✓</span> Imagen frontal con sellos INVIMA
+          </div>
+          <div class="processing-step">
+            <span class="check">✓</span> Detección de colisiones en imagen trasera
+          </div>
+          <div class="processing-step">
+            <span class="check">✓</span> Tabla nutricional posicionada
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PASO 4: Vista Previa -->
+<section *ngIf="state().currentStep === 'preview'" class="step-content">
+  <h2>Paso 4: Vista previa del empaque</h2>
+  <p class="step-description">
+    Revisa cómo se verá tu empaque antes de generar el PDF
+  </p>
+
+  <div class="preview-grid">
+    <div class="preview-item">
+      <h3>Imagen Frontal</h3>
+      <div class="preview-container">
+        <img 
+          *ngIf="getFrontalPreviewUrl()" 
+          [src]="getFrontalPreviewUrl()" 
+          alt="Frontal Preview"
+          class="preview-image"
+        />
+      </div>
+    </div>
+
+    <div class="preview-item">
+      <h3>Imagen Trasera</h3>
+      <div class="preview-container">
+        <img 
+          *ngIf="getTraseraPreviewUrl()" 
+          [src]="getTraseraPreviewUrl()" 
+          alt="Trasera Preview"
+          class="preview-image"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-info">
+    <h4>Información incluida en el PDF:</h4>
+    <ul>
+      <li><strong>Producto:</strong> {{ state().selectedDocument?.producto }}</li>
+      <li><strong>Sellos:</strong> {{ state().selectedDocument?.nutritionData?.advertencias?.length || 0 }} advertencias</li>
+      <li><strong>Tabla Nutricional:</strong> Incluida en imagen trasera</li>
+      <li><strong>Metadata:</strong> ID, fecha y nombre del producto</li>
+    </ul>
+  </div>
+
+  <div class="step-actions">
+    <button class="btn btn-secondary" (click)="goBack()">Atrás</button>
+    <button class="btn btn-primary" (click)="proceedToDownload()">
+      Generar PDF
+    </button>
+  </div>
+</section>
+
+    <!-- PASO 5: Descargar PDF -->
+    <section *ngIf="state().currentStep === 'download'" class="step-content">
+      <h2>Paso 5: Descarga tu empaque</h2>
+      <p class="step-description">
+        Tu empaque está listo. Descárgalo como PDF profesional.
+      </p>
+
+      <div class="download-container">
+        <div class="download-icon">📥</div>
+        <h3>Tu PDF está listo</h3>
+        <p>Archivo: packaging_{{ state().selectedDocument?.producto || 'producto' }}_{{ (state().selectedDocument?.uploadedAt | date:'yyyyMMddHHmmss') }}.pdf</p>
+
+        <button
+          class="btn btn-lg btn-primary"
+          (click)="generatePackagingPdf()"
+          [disabled]="state().isProcessing"
+        >
+          {{ state().isProcessing ? '⏳ Generando PDF...' : '⬇️ Descargar PDF' }}
+        </button>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn btn-secondary" (click)="resetWizard()">
+          Crear otro empaque
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Error Message -->
+  <div *ngIf="state().error" class="error-banner">
+    <div class="error-icon">⚠️</div>
+    <div class="error-message">{{ state().error }}</div>
+    <button class="error-close" (click)="clearError()">✕</button>
+  </div>
+
+</div>
